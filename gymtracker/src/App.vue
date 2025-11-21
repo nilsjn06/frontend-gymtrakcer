@@ -1,33 +1,21 @@
-<script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="48" height="48" />
-    <h1 class="title">GymTracker</h1>
-
-    <nav>
-      <RouterLink to="/">Home</RouterLink>
-      <RouterLink to="/about">About</RouterLink>
-    </nav>
-  </header>
-
-  <main>
-    <RouterView />
-  </main>
+  <router-view />
 </template>
 
-<style scoped>
-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  border-bottom: 1px solid var(--color-border);
+<script setup lang="ts"></script>
+
+<style>
+/* globale Grundfarben wie im Figma */
+:root{
+  --blue:#a7c7f4;
+  --ink:#111827;
+  --paper:#f3f4f6;
 }
-.title { margin: 0; font-size: 1.2rem; flex: 1; }
-nav a { padding: 0.25rem 0.75rem; border-left: 1px solid var(--color-border); text-decoration: none; }
-nav a:first-of-type { border-left: 0; }
-main { padding: 1rem; }
+html,body,#app{ height: 100%; }
+body{
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+}
 </style>
