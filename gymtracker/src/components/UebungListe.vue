@@ -1,42 +1,63 @@
 <script setup lang="ts">
-import Uebung from './Uebung.vue'
+import { ref, onMounted } from 'vue'
 
-const exercises = [
-  {
-    name: 'Bankdrücken',
-    muskelgruppe: 'Brust',
-    satz: 3,
-    wiederholungen: 10,
-    gewicht: 60.0
-  },
-  {
-    name: 'Kniebeuge',
-    muskelgruppe: 'Beine',
-    satz: 4,
-    wiederholungen: 8,
-    gewicht: 80.0
-  },
-  {
-    name: 'Klimmzüge',
-    muskelgruppe: 'Rücken',
-    satz: 3,
-    wiederholungen: 12,
-    gewicht: 0.0
+interface Exercise {
+  name: string
+  muskelgruppe: string
+  satz: number
+  wiederholungen: number
+  gewicht: number
+}
+
+const exercises = ref<Exercise[]>([])
+const isLoading = ref(false)
+const error = ref<string | null>(null)
+
+const loadExercises = async () => {
+  try {
+    isLoading.value = true
+    error.value = null
+
+    const baseUrl = import.meta.env.VITE_BACKEND_BASE_URL
+    const response = await fetch(`${baseUrl}/api/exercises`)
+
+    if (!response.ok) {
+      throw new Error(`HTTP-Fehler: ${response.status}`)
+    }
+
+    exercises.value = await response.json()
+  } catch (e: any) {
+    console.error(e)
+    error.value = e?.message ?? 'Unbekannter Fehler'
+  } finally {
+    isLoading.value = false
   }
-]
+}
+
+onMounted(() => {
+  loadExercises()
+})
 </script>
 
 <template>
   <section>
-    <h2>Meine Übungen</h2>
-    <Uebung
-      v-for="(ex, index) in exercises"
-      :key="index"
-      :name="ex.name"
-      :muskelgruppe="ex.muskelgruppe"
-      :satz="ex.satz"
-      :wiederholungen="ex.wiederholungen"
-      :gewicht="ex.gewicht"
-    />
+    <h2>Übungen</h2>
+
+    <p v-if="isLoading">Lade Übungen...</p>
+    <p v-else-if="error" class="error">Fehler: {{ error }}</p>
+
+    <ul v-else>
+      <li v-for="ex in exercises" :key="ex.name">
+        <strong>{{ ex.name }}</strong>
+        – {{ ex.muskelgruppe }}
+        ({{ ex.satz }}×{{ ex.wiederholungen }} mit {{ ex.gewicht }} kg)
+      </li>
+    </ul>
   </section>
 </template>
+
+<style scoped>
+.error {
+  color: red;
+}
+</style>
